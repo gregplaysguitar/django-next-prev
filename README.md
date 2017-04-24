@@ -2,6 +2,9 @@
 [![codecov](https://codecov.io/gh/gregplaysguitar/django-next-prev/branch/master/graph/badge.svg)](https://codecov.io/gh/gregplaysguitar/django-next-prev)
 [![Latest Version](https://img.shields.io/pypi/v/django-next-prev.svg?style=flat)](https://pypi.python.org/pypi/django-next-prev/)
 
+## Purpose
+
+django-next-prev provides utilities to get the next or previous item within an ordered, filtered queryset. For example, you could display a link to the next featured post on a post detail page, or show chronological next and previous links for all published posts.
 
 ## Installation
 
