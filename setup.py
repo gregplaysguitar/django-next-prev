@@ -14,7 +14,7 @@ else:
 setup(
     name='django-next-prev',
     version='1.0.0',
-    description='Configurable search for django models',
+    description='Django utility to retrieve the next or previous object, given a current object and a queryset.',
     long_description=open(readme_path).read(),
     author='Greg Brown',
     author_email='greg@gregbrown.co.nz',
