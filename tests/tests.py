@@ -29,22 +29,22 @@ class NextPrevTestCase(TestCase):
         first = qs.first()
         self.assertEqual(first, self.post1)
 
-        second = next_in_order(first, qs)
+        second = next_in_order(first)
         self.assertEqual(second, self.post2)
 
-        third = next_in_order(second, qs)
+        third = next_in_order(second)
         self.assertEqual(third, self.post3)
 
-        fourth = next_in_order(third, qs)
+        fourth = next_in_order(third)
         self.assertEqual(fourth, None)
 
-        fourth_loop = next_in_order(third, qs, loop=True)
+        fourth_loop = next_in_order(third, loop=True)
         self.assertEqual(fourth_loop, self.post1)
 
-        prev = prev_in_order(first, qs)
+        prev = prev_in_order(first)
         self.assertEqual(prev, None)
 
-        prev_loop = prev_in_order(first, qs, loop=True)
+        prev_loop = prev_in_order(first, loop=True)
         self.assertEqual(prev_loop, self.post3)
 
     def test_custom(self):
