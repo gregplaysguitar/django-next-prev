@@ -47,6 +47,7 @@ from .models import Post
 # default ordering
 first = Post.objects.first()
 second = next_in_order(first)
+prev_in_order(second) == first # True
 last = prev_in_order(first, loop=True)
 
 # custom ordering
