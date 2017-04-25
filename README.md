@@ -30,6 +30,7 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created = models.DateField()
+    featured = models.BooleanField(default=False)
     text = models.TextField()
 
     class Meta:
@@ -53,4 +54,9 @@ qs = Post.objects.all().order_by('-created')
 newest = qs.first()
 second_newest = next_in_order(newest, qs=qs)
 oldest = prev_in_order(newest, qs=qs, loop=True)
+
+# filtered
+qs = Post.objects.filter(featured=True)
+first_featured = qs.first()
+second_featured = next_in_order(first_featured, qs=qs)
 ```
