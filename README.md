@@ -61,3 +61,8 @@ qs = Post.objects.filter(featured=True)
 first_featured = qs.first()
 second_featured = next_in_order(first_featured, qs=qs)
 ```
+
+### Issues with ordering 
+
+If results inconsistent with the order of your queryset, you're probably ordering on a non-unique combination of fields. For example, `ordering = ('sort_order', )` with the duplicate `sort_order` values. To resolve this, add a unique field to your ordering, i.e. `ordering = ('sort_order', 'pk')`
+
