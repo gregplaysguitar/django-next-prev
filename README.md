@@ -34,7 +34,8 @@ class Post(models.Model):
     text = models.TextField()
 
     class Meta:
-        ordering = ('created', 'title')
+        # order on primary key to make sure it's unique
+        ordering = ('created', 'title', 'pk')
 ```   
 
 You can do the following
@@ -50,7 +51,7 @@ prev_in_order(second) == first # True
 last = prev_in_order(first, loop=True)
 
 # custom ordering
-qs = Post.objects.all().order_by('-created')
+qs = Post.objects.all().order_by('-created', '-pk')
 newest = qs.first()
 second_newest = next_in_order(newest, qs=qs)
 oldest = prev_in_order(newest, qs=qs, loop=True)
