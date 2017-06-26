@@ -69,3 +69,27 @@ class NextPrevTestCase(TestCase):
 
         prev_loop = prev_in_order(first, qs, loop=True)
         self.assertEqual(prev_loop, self.post2)
+
+    def test_no_ordering(self):
+        qs = Post.objects.all().order_by()
+
+        first = qs.first()
+        self.assertEqual(first, self.post1)
+
+        second = next_in_order(first, qs)
+        self.assertEqual(second, self.post2)
+
+        third = next_in_order(second, qs)
+        self.assertEqual(third, self.post3)
+
+        fourth = next_in_order(third, qs)
+        self.assertEqual(fourth, None)
+
+        fourth_loop = next_in_order(third, qs, loop=True)
+        self.assertEqual(fourth_loop, self.post1)
+
+        prev = prev_in_order(first, qs)
+        self.assertEqual(prev, None)
+
+        prev_loop = prev_in_order(first, qs, loop=True)
+        self.assertEqual(prev_loop, self.post3)

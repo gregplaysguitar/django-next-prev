@@ -45,7 +45,12 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
 
     ordering = list(ordering)
 
-    for field in (ordering + ['pk']):
+    # if the ordering doesn't contain pk, append it to ensure uniqueness
+    if 'pk' not in ordering and '-pk' not in ordering:
+        ordering.append('pk')
+        qs = qs.order_by(*ordering)
+
+    for field in ordering:
         if field[0] == '-':
             this_lookup = (lookup == 'gt' and 'lt' or 'gt')
             field = field[1:]
