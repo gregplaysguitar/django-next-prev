@@ -38,8 +38,12 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
 
     if qs.query.extra_order_by:
         ordering = qs.query.extra_order_by
+    elif qs.query.order_by:
+        ordering = qs.query.order_by
+    elif qs.query.get_meta().ordering:
+        ordering = qs.query.get_meta().ordering
     else:
-        ordering = qs.query.order_by or qs.query.get_meta().ordering or []
+        ordering = []
 
     ordering = list(ordering)
 
