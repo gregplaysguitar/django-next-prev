@@ -38,14 +38,13 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
 
     if qs.query.extra_order_by:
         ordering = qs.query.extra_order_by
-    elif not qs.query.default_ordering:
-        ordering = qs.query.order_by
     else:
-        ordering = qs.query.order_by or qs.query.get_meta().ordering
+        ordering = qs.query.order_by or qs.query.get_meta().ordering or []
 
     ordering = list(ordering)
 
-    # if the ordering doesn't contain pk, append it to ensure uniqueness
+    # if the ordering doesn't contain pk, append it and reorder the queryset
+    # to ensure consistency
     if 'pk' not in ordering and '-pk' not in ordering:
         ordering.append('pk')
         qs = qs.order_by(*ordering)
