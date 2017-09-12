@@ -93,7 +93,7 @@ class NextPrevTestCase(TestCase):
 
         prev_loop = prev_in_order(first, qs, loop=True)
         self.assertEqual(prev_loop, self.post3)
-    
+
     def test_empty_ordering(self):
         qs = Category.objects.all()
 
@@ -106,12 +106,11 @@ class NextPrevTestCase(TestCase):
         third = next_in_order(second, qs)
         self.assertEqual(third, None)
 
-        third_loop = next_in_order(third, qs, loop=True)
-        self.assertEqual(fourth_loop, self.first_category)
+        third_loop = next_in_order(second, qs, loop=True)
+        self.assertEqual(third_loop, self.first_category)
 
         prev = prev_in_order(first, qs)
         self.assertEqual(prev, None)
 
         prev_loop = prev_in_order(first, qs, loop=True)
         self.assertEqual(prev_loop, self.second_category)
-
