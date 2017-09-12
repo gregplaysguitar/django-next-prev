@@ -10,19 +10,19 @@ from next_prev import next_in_order, prev_in_order
 class NextPrevTestCase(TestCase):
     def setUp(self):
         # add some content
-        first_category = Category.objects.create(title='Category 1')
-        second_category = Category.objects.create(title='Category 2')
+        self.first_category = Category.objects.create(title='Category 1')
+        self.second_category = Category.objects.create(title='Category 2')
 
         self.post1 = Post.objects.create(
             title='Post 1', text='Beautiful is better than ugly.',
-            category=first_category, created=date(2015, 1, 1))
+            category=self.first_category, created=date(2015, 1, 1))
         self.post2 = Post.objects.create(
             title='Post 2', text='Simple is better than complex.',
-            category=second_category, created=date(2015, 1, 1))
+            category=self.second_category, created=date(2015, 1, 1))
         self.post3 = Post.objects.create(
             title='Post 3',
             text='Complex is better than complicated.',
-            category=first_category, created=date(2016, 1, 1))
+            category=self.first_category, created=date(2016, 1, 1))
 
     def test_default(self):
         qs = Post.objects.all()
