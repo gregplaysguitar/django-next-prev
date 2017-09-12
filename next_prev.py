@@ -35,6 +35,9 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
 
     q_list = []
     prev_fields = []
+    
+    if not qs.query.get_meta().ordering:
+        qs.query.get_meta().ordering = ['pk']
 
     if qs.query.extra_order_by:
         ordering = qs.query.extra_order_by
