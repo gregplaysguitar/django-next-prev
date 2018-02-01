@@ -54,6 +54,9 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
         qs = qs.order_by(*ordering)
 
     for field in ordering:
+        # if isinstance(field, models.Expression):
+
+
         if field[0] == '-':
             this_lookup = (lookup == 'gt' and 'lt' or 'gt')
             field = field[1:]

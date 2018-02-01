@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.test import TestCase
+from django.db.models.functions import Length
 
 from .models import Post, Category
 
@@ -114,3 +115,27 @@ class NextPrevTestCase(TestCase):
 
         prev_loop = prev_in_order(first, qs, loop=True)
         self.assertEqual(prev_loop, self.second_category)
+
+    def test_expression_ordering(self):
+        qs = Post.objects.all().order_by(Length('text'))
+
+        first = qs.first()
+        second = next_in_order(first, qs),
+        third = next_in_order(second, qs),
+        fourth = next_in_order(third, qs),
+        self.assertEqual(
+            [first, second, third, fourth],
+            [self.post1, self.post2, self.post3, None])
+
+        self.assertEqual(
+            next_in_order(qs.last(), qs, loop=True), self.post1)
+
+        qs_desc = Post.objects.all().order_by(Length('text').desc())
+
+        first = qs_desc.first()
+        second = next_in_order(first, qs_desc),
+        third = next_in_order(second, qs_desc),
+        fourth = next_in_order(third, qs_desc),
+        self.assertEqual(
+            [first, second, third, fourth],
+            [self.post3, self.post2, self.post1, None])
