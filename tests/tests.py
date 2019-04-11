@@ -120,22 +120,22 @@ class NextPrevTestCase(TestCase):
     def test_order_on_nullable(self):
         qs = Post.objects.all().order_by('author')
         first = qs.first()
-        self.assertEqual(first, self.post3)
+        self.assertEqual(first, self.post2)
 
         second = next_in_order(first, qs)
-        self.assertEqual(second, self.post1)
+        self.assertEqual(second, self.post3)
 
         third = next_in_order(second, qs)
-        self.assertEqual(third, self.post2)
+        self.assertEqual(third, self.post1)
 
         fourth = next_in_order(third, qs)
         self.assertEqual(fourth, None)
 
         fourth_loop = next_in_order(third, qs, loop=True)
-        self.assertEqual(fourth_loop, self.post3)
+        self.assertEqual(fourth_loop, self.post2)
 
         prev = prev_in_order(first, qs)
         self.assertEqual(prev, None)
 
         prev_loop = prev_in_order(first, qs, loop=True)
-        self.assertEqual(prev_loop, self.post2)
+        self.assertEqual(prev_loop, self.post1)
