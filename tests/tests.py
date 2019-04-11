@@ -15,14 +15,16 @@ class NextPrevTestCase(TestCase):
 
         self.post1 = Post.objects.create(
             title='Post 1', text='Beautiful is better than ugly.',
-            category=self.first_category, created=date(2015, 1, 1))
+            category=self.first_category, created=date(2015, 1, 1),
+            author='Steve')
         self.post2 = Post.objects.create(
             title='Post 2', text='Simple is better than complex.',
             category=self.second_category, created=date(2015, 1, 1))
         self.post3 = Post.objects.create(
             title='Post 3',
             text='Complex is better than complicated.',
-            category=self.first_category, created=date(2016, 1, 1))
+            category=self.first_category, created=date(2016, 1, 1),
+            author='Mary')
 
     def test_default(self):
         qs = Post.objects.all()
@@ -114,3 +116,26 @@ class NextPrevTestCase(TestCase):
 
         prev_loop = prev_in_order(first, qs, loop=True)
         self.assertEqual(prev_loop, self.second_category)
+        
+    def test_order_on_nullable(self):
+        qs = Post.objects.all().order_by('author')
+        first = qs.first()
+        self.assertEqual(first, self.post3)
+
+        second = next_in_order(first, qs)
+        self.assertEqual(second, self.post1)
+
+        third = next_in_order(second, qs)
+        self.assertEqual(third, self.post2)
+
+        fourth = next_in_order(third, qs)
+        self.assertEqual(fourth, None)
+
+        fourth_loop = next_in_order(third, qs, loop=True)
+        self.assertEqual(fourth_loop, self.post3)
+
+        prev = prev_in_order(first, qs)
+        self.assertEqual(prev, None)
+
+        prev_loop = prev_in_order(first, qs, loop=True)
+        self.assertEqual(prev_loop, self.post2)
