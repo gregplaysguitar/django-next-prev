@@ -62,9 +62,11 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
         q_kwargs = dict([(f, get_model_attr(instance, f))
                          for f in prev_fields])
         key = "%s__%s" % (field, this_lookup)
-        q_kwargs[key] = get_model_attr(instance, field)
-        q_list.append(models.Q(**q_kwargs))
-        prev_fields.append(field)
+        val = get_model_attr(instance, field)
+        if val is not None:
+            q_kwargs[key] = val
+            q_list.append(models.Q(**q_kwargs))
+            prev_fields.append(field)
     try:
         return qs.filter(reduce(models.Q.__or__, q_list))[0]
     except IndexError:
