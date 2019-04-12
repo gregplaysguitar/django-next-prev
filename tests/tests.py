@@ -51,12 +51,15 @@ class NextPrevTestCase(TestCase):
 
     def test_custom(self):
         qs = Post.objects.all().order_by('category__title', '-created')
+        print("QS_CUSTOM" ,qs)
         first = qs.first()
         self.assertEqual(first, self.post3)
 
+        print("T2")
         second = next_in_order(first, qs)
         self.assertEqual(second, self.post1)
 
+        print("T3")
         third = next_in_order(second, qs)
         self.assertEqual(third, self.post2)
 
