@@ -53,7 +53,38 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
         ordering.append('pk')
         qs = qs.order_by(*ordering)
 
-    # TODO do this recursively ?
+
+    # for field in ordering:
+    #     if field[0] == '-':
+    #         this_lookup = (lookup == 'gt' and 'lt' or 'gt')
+    #         field = field[1:]
+    #     else:
+    #         this_lookup = lookup
+    #     q_kwargs = dict([(f, get_model_attr(instance, f))
+    #                      for f in prev_fields])
+    #     key = "%s__%s" % (field, this_lookup)
+    #     val = get_model_attr(instance, field)
+    #     q_kwargs[key] = val
+    #     q_list.append(models.Q(**q_kwargs))
+    #     prev_fields.append(field)
+
+    try:
+        item = get_next_prev_item(instance, qs, ordering, lookup, prev)
+        return item
+
+    except IndexError:
+        length = qs.count()
+        if loop and length > 1:
+            # queryset is reversed above if prev
+            return qs[0]
+    return None
+
+
+def get_next_prev_item(instance, qs, ordering, lookup, prev=False):
+    # print("POPPED ORDERING", ordering, qs)
+
+    q_list = []
+    prev_fields = []
 
     for field in ordering:
         if field[0] == '-':
@@ -69,77 +100,59 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
         q_list.append(models.Q(**q_kwargs))
         prev_fields.append(field)
 
-    try:
-        field = ordering[0]
-        val = get_model_attr(instance, field)
-        qss = qs
-        print("ORDERING", ordering)
-        print("INSTANCE", instance)
-        print("FV", field, val)
+    # remove first key from ordering, which is the primary field we are sorting after
+    field = ordering.pop(0)
+    if field[0] == '-':
+        field = field[1:]
+
+    val = get_model_attr(instance, field)
+
+    # if len of ordering contains more than one key, sort by secondary key
+    # last item should be always pk and is always added before
+    # +1 because we popped a key before
+    if len(ordering) + 1 > 1:
+        # if val is not None, there is no need to sort by second key
         if val is not None:
-            qss = qs.filter(reduce(models.Q.__or__, q_list))
+            qs = qs.filter(reduce(models.Q.__or__, q_list))
         else:
-            qss = qs.filter().exclude(pk=instance.pk)
+            # Build query for secondary key lookup
+
+            lookup2 = 'gt'
             if prev:
-                print("PREV of NULLL")
-                filterterm = {field + "__isnull": True, "pk__lt":instance.pk}
-                qss = qss.filter(**filterterm)
-            else:
-                print("NEXT of NULL")
-                qss = qss.filter(pk__gt=instance.pk)
+                lookup2 = 'lt'
 
-
-        item = qss[0]
-        print(instance)
-        print("VAL", val, field)
-        print(item, instance)
-        print(get_model_attr(item, field), get_model_attr(instance, field))
-        print(get_model_attr(item, "pk") , get_model_attr(instance, "pk"))
-        print("Yo")
-        print(qss)
-
-        if get_model_attr(item, field) == get_model_attr(instance, field):
-            print("same", item, get_model_attr(item, field), instance, get_model_attr(instance, field))
-            print("QK", q_kwargs)
-            print("QL", q_list)
-            filterterm = {field: val}
-            print("FILTER", filterterm)
-            qss = qss.filter(models.Q(**filterterm))
-            print("new QS", qss)
-            field2 = ordering[1]
-            lookup = "gt"
-            if field2[0] == "-":
-                if prev:
-                    lookup = "gt"
-                else:
-                    lookup = "lt"
+            field2 = ordering[0]
+            if field2[0] == '-':
+                lookup2 = (lookup2 == 'gt' and 'lt' or 'gt')
                 field2 = field2[1:]
-            else:
-                if prev:
-                    lookup = "lt"
 
-            print("FIELD", field2)
-            filterterm = {}
-            if prev:
-                filterterm = {field2 + "__" + lookup: get_model_attr(instance, field2)}
-                # item = qss.filter(**filterterm).first()
+            # exclude instance from queryset, so it won't appear in a queryset filtered to (field__isnull=True)
+            qs = qs.filter().exclude(pk=instance.pk)
+            # build filter for secondary key
+            filter_term = {field2 + "__" + lookup2: get_model_attr(instance, field2)}
 
-            else:
-                filterterm = {field2 + "__" + lookup: get_model_attr(instance, field2)}
-                # item = qss.filter(**filterterm).first()
-            print("FILTERTERM", filterterm)
-            qss = qss.filter(**filterterm)
-            print(qss)
-            item = qss.first()
+            if lookup == 'lt':
+                # if the lookup would be (field__lt=None) the item can only be in a queryset filtered to None
+                filter_term[field + "__isnull"] = True
+            qs = qs.filter(**filter_term)
 
-        return item
+    # ordering had only one key left (pk), so return the matching item for that
+    # no need to check if value is None, pk can't be none
+    else:
+        return qs.filter(reduce(models.Q.__or__, q_list))[0]
 
-    except IndexError:
-        length = qs.count()
-        if loop and length > 1:
-            # queryset is reversed above if prev
-            return qs[0]
-    return None
+    # get the next/prev item from the queryset. IndexError is caught in the super function
+    item = qs[0]
+
+    # If field value of next/prev is same as of instance, filter to a subset with this value, ordered by secondary key
+    # recursive call
+    if get_model_attr(item, field) == get_model_attr(instance, field):
+        filter_term = {field: val}
+        qs = qs.filter(models.Q(**filter_term))
+
+        return get_next_prev_item(instance, qs, ordering, lookup, prev)
+
+    return item
 
 
 next_in_order = partial(next_or_prev_in_order, prev=False)
