@@ -24,7 +24,7 @@ def next_or_prev_in_order(instance, qs=None, prev=False, loop=False):
        queryset ordering. If loop is True, return the first/last item when the
        end/start is reached. """
 
-    if not qs:
+    if qs is None:
         qs = instance.__class__.objects.all()
 
     if prev:
