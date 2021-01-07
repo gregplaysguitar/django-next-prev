@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install tox
-      - run: TOXENV=py39-{dj22,dj30,dj31,dj32} tox
+      - run: TOXENV=py39-{dj22,dj30,dj31} tox
 
   python38:
     working_directory: ~/django-eventtools
@@ -16,7 +16,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install tox
-      - run: TOXENV=py38-{dj20,dj21,dj22,dj30,dj31,dj32} tox
+      - run: TOXENV=py38-{dj20,dj21,dj22,dj30,dj31} tox
 
   python37:
     working_directory: ~/django-next-prev
@@ -25,7 +25,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install tox
-      - run: TOXENV=py37-{dj20,dj21,dj22,dj30,dj31,dj32} tox
+      - run: TOXENV=py37-{dj20,dj21,dj22,dj30,dj31} tox
 
   python36:
     working_directory: ~/django-next-prev
@@ -34,7 +34,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install tox
-      - run: TOXENV=py36-{dj11,dj20,dj21,dj22,dj30,dj31,dj32} tox
+      - run: TOXENV=py36-{dj11,dj20,dj21,dj22,dj30,dj31} tox
 
   python35:
     working_directory: ~/django-next-prev
