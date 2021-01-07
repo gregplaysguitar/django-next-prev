@@ -13,6 +13,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created = models.DateField()
     text = models.TextField()
+    author = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title
